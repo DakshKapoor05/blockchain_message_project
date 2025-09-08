@@ -169,9 +169,9 @@ class BlockchainMessengerDB:
     def send_message(self, sender_id, receiver_id, message_text):
         try:
             message_data = {
-                'sender_id': sender_id, 
-                'receiver_id': receiver_id, 
-                'message_text': message_text, 
+                'sender_id': sender_id,
+                'receiver_id': receiver_id,
+                'message_text': message_text,
                 'sent_at': datetime.datetime.utcnow().isoformat()
             }
             message_json = json.dumps(message_data)
@@ -184,8 +184,7 @@ class BlockchainMessengerDB:
                 'blockchain_hash': new_block.hash,
                 'previous_hash': new_block.previous_hash
             }).execute()
-            if res.error:
-                return False, res.error.message
+            
             return True, 'Message sent and added to blockchain'
         except Exception as e:
             return False, str(e)
@@ -195,26 +194,20 @@ class BlockchainMessengerDB:
             res = self.supabase.table('messages').select('*').or_(
                 f'sender_id.eq.{user_id},receiver_id.eq.{user_id}'
             ).order('sent_at', desc=True).execute()
-            if res.error:
-                return []
-            return res.data
+            return res.data if res.data else []
         except:
             return []
 
     def get_total_messages_count(self):
         try:
             res = self.supabase.table('messages').select('id', count='exact').execute()
-            if res.error:
-                return 0
-            return res.count
+            return res.count if res.count else 0
         except:
             return 0
 
     def get_all_users_count(self):
         try:
             res = self.supabase.table('users1').select('id', count='exact').execute()
-            if res.error:
-                return 0
-            return res.count
+            return res.count if res.count else 0
         except:
             return 0
