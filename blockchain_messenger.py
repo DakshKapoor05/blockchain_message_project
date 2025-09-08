@@ -199,15 +199,27 @@ class BlockchainMessengerDB:
             return []
 
     def get_total_messages_count(self):
-        try:
-            res = self.supabase.table('messages').select('id', count='exact').execute()
-            return res.count if res.count else 0
-        except:
-            return 0
+    try:
+        res = self.supabase.table('messages').select('id', count='exact').execute()
+        if hasattr(res, 'count') and res.count is not None:
+            return res.count
+        if hasattr(res, 'data') and res.data:
+            return len(res.data)
+        return 0
+    except Exception as e:
+        st.error(f"Error fetching total messages count: {e}")
+        return 0
+
 
     def get_all_users_count(self):
-        try:
-            res = self.supabase.table('users1').select('id', count='exact').execute()
-            return res.count if res.count else 0
-        except:
-            return 0
+    try:
+        res = self.supabase.table('users1').select('id', count='exact').execute()
+        if hasattr(res, 'count') and res.count is not None:
+            return res.count
+        if hasattr(res, 'data') and res.data:
+            return len(res.data)
+        return 0
+    except Exception as e:
+        st.error(f"Error fetching total users count: {e}")
+        return 0
+
