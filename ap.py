@@ -115,19 +115,15 @@ def messaging(db):
                             st.error(f"❌ {msg}")
     with tab2:
         st.subheader("📥 Your Messages")
-        messages = db.get_all_messages_for_user(user["id"])
+        messages = [m for m in db.get_all_messages_for_user(user["id"]) if m["sender_id"] != user["id"]]
         if messages:
             for m in messages:
                 sender_user = db.supabase.table("users1").select("username").eq("id", m["sender_id"]).execute()
                 receiver_user = db.supabase.table("users1").select("username").eq("id", m["receiver_id"]).execute()
                 sender_name = sender_user.data[0]["username"] if sender_user.data else "Unknown"
                 receiver_name = receiver_user.data[0]["username"] if receiver_user.data else "Unknown"
-                if m["sender_id"] == user["id"]:
-                    direction = f"📤 **You** → {receiver_name}"
-                    st.markdown(f'<div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #0ea5e9;">', unsafe_allow_html=True)
-                else:
-                    direction = f"📥 **{sender_name}** → You"
-                    st.markdown(f'<div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #22c55e;">', unsafe_allow_html=True)
+                direction = f"📥 **{sender_name}** → You"
+                st.markdown(f'<div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #22c55e;">', unsafe_allow_html=True)
                 st.markdown(f"**{direction}**")
                 st.write(f"💬 {m['message_text']}")
                 st.caption(f"🕒 {m['sent_at'][:19]} | 🔗 Hash: {m['blockchain_hash'][:16]}...")
@@ -173,13 +169,13 @@ def messaging(db):
             st.subheader("🔗 Recent Blockchain Blocks")
             recent_blocks = db.chain[-3:] if len(db.chain) > 3 else db.chain
             for block in reversed(recent_blocks):
-                with st.expander(f"Block #{block['index']} - {block['timestamp'][:19]}"):
+                with st.expander(f"Block #{block.index} - {block.timestamp[:19]}"):
                     st.json({
-                        "Index": block['index'],
-                        "Timestamp": block['timestamp'],
-                        "Data": block['data'],
-                        "Hash": block['hash'],
-                        "Previous Hash": block['previous_hash']
+                        "Index": block.index,
+                        "Timestamp": block.timestamp,
+                        "Data": block.data,
+                        "Hash": block.hash,
+                        "Previous Hash": block.previous_hash
                     })
 
 def main():
