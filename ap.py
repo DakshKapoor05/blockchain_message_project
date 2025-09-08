@@ -5,7 +5,7 @@ import time
 st.set_page_config(
     page_title="🔐 Blockchain Messenger",
     page_icon="🔐",
-    layout="centered",
+    #layout="centered",
     initial_sidebar_state="expanded"
 )
 
@@ -269,3 +269,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
