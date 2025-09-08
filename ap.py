@@ -9,11 +9,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-
 @st.cache_resource
 def init_db():
     return BlockchainMessengerDB()
-
 
 def login(db):
     st.subheader("🔑 Login to Your Account")
@@ -34,8 +32,8 @@ def login(db):
                     st.error("❌ Invalid username or password!")
             else:
                 st.warning("⚠️ Please enter both username and password")
-    # Demo credentials placed below the form     
-     with st.expander("🎮 Demo Credentials", expanded=False):
+    # Demo credentials placed below the form
+    with st.expander("🎮 Demo Credentials", expanded=False):
         st.markdown("""
         **Demo Account 1:**
         - Username: `user1`  
@@ -50,14 +48,11 @@ def login(db):
 
 def register(db):
     st.subheader("📝 Create New Account")
-    st.markdown(
-        "💡 **Tip:** You can also use the demo accounts `user1` and `user2` with password `pass123` and `pass456`")
+    st.markdown("💡 **Tip:** You can also use the demo accounts `user1` and `user2` with password `pass123` and `pass456`")
     with st.form("register_form", clear_on_submit=False):
         username = st.text_input("👤 Choose Username", placeholder="Enter a unique username", key="register_username")
-        password1 = st.text_input("🔒 Password", type="password", placeholder="Enter your password",
-                                  key="register_password1")
-        password2 = st.text_input("🔒 Confirm Password", type="password", placeholder="Re-enter your password",
-                                  key="register_password2")
+        password1 = st.text_input("🔒 Password", type="password", placeholder="Enter your password", key="register_password1")
+        password2 = st.text_input("🔒 Confirm Password", type="password", placeholder="Re-enter your password", key="register_password2")
         submitted = st.form_submit_button("📝 Register", use_container_width=True)
         if submitted:
             if not username or not password1 or not password2:
@@ -73,7 +68,6 @@ def register(db):
                     st.markdown("🎉 You can now login with your credentials!")
                 else:
                     st.error(f"❌ {msg}")
-
 
 def messaging(db):
     user = st.session_state["user"]
@@ -99,10 +93,8 @@ def messaging(db):
         # elif user['username'] == 'user2':
         #     st.info("💡 **Quick tip:** Send a message to `user1` to test the blockchain!")
         with st.form("send_message_form", clear_on_submit=True):
-            receiver = st.text_input("📮 Send to (username)", placeholder="Enter recipient's username",
-                                     key="msg_receiver")
-            message = st.text_area("💬 Your Message", placeholder="Type your message here...", height=150,
-                                   key="msg_content")
+            receiver = st.text_input("📮 Send to (username)", placeholder="Enter recipient's username", key="msg_receiver")
+            message = st.text_area("💬 Your Message", placeholder="Type your message here...", height=150, key="msg_content")
             sent = st.form_submit_button("📨 Send Message", use_container_width=True)
             if sent:
                 if not receiver or not message:
@@ -132,14 +124,10 @@ def messaging(db):
                 receiver_name = receiver_user.data[0]["username"] if receiver_user.data else "Unknown"
                 if m["sender_id"] == user["id"]:
                     direction = f"📤 **You** → {receiver_name}"
-                    st.markdown(
-                        f'<div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #0ea5e9;">',
-                        unsafe_allow_html=True)
+                    st.markdown(f'<div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #0ea5e9;">', unsafe_allow_html=True)
                 else:
                     direction = f"📥 **{sender_name}** → You"
-                    st.markdown(
-                        f'<div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #22c55e;">',
-                        unsafe_allow_html=True)
+                    st.markdown(f'<div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #22c55e;">', unsafe_allow_html=True)
                 st.markdown(f"**{direction}**")
                 st.write(f"💬 {m['message_text']}")
                 st.caption(f"🕒 {m['sent_at'][:19]} | 🔗 Hash: {m['blockchain_hash'][:16]}...")
@@ -162,8 +150,7 @@ def messaging(db):
         # FIXED: Buttons with icons INSIDE the button labels, side by side
         col4, col5 = st.columns([1, 1])
         with col4:
-            verify_clicked = st.button("🔍 Verify Blockchain Integrity", key="verify_blockchain_btn",
-                                       use_container_width=True)
+            verify_clicked = st.button("🔍 Verify Blockchain Integrity", key="verify_blockchain_btn", use_container_width=True)
             if verify_clicked:
                 with st.spinner("Verifying blockchain..."):
                     db.load_existing_chain()
@@ -195,7 +182,6 @@ def messaging(db):
                         "Previous Hash": block['previous_hash']
                     })
 
-
 def main():
     st.markdown("""
     <style>
@@ -204,7 +190,7 @@ def main():
         font-family: "Segoe UI", sans-serif;
         background-color: #fafbfc;
     }
-
+    
     /* Basic button styling */
     .stButton > button {
         background-color: #1f2937 !important;
@@ -215,11 +201,11 @@ def main():
         font-weight: 500 !important;
         transition: background-color 0.2s ease;
     }
-
+    
     .stButton > button:hover {
         background-color: #374151 !important;
     }
-
+    
     /* Clean input fields */
     .stTextInput > div > div > input,
     .stTextArea > div > div > textarea {
@@ -227,13 +213,13 @@ def main():
         border-radius: 6px !important;
         padding: 0.75rem !important;
     }
-
+    
     .stTextInput > div > div > input:focus,
     .stTextArea > div > div > textarea:focus {
         border-color: #1f2937 !important;
         outline: none !important;
     }
-
+    
     /* Simple metrics */
     [data-testid="metric-container"] {
         background: white !important;
@@ -242,14 +228,14 @@ def main():
         padding: 1rem !important;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
     }
-
+    
     /* Column spacing */
     div[data-testid="stHorizontalBlock"] > div {
         gap: 1rem !important;
     }
     </style>
     """, unsafe_allow_html=True)
-
+    
     db = init_db()
     if "logged_in" not in st.session_state:
         st.session_state["logged_in"] = False
@@ -285,8 +271,5 @@ def main():
     else:
         messaging(db)
 
-
 if __name__ == "__main__":
     main()
-
-
