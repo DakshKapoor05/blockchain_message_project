@@ -9,11 +9,9 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-
 @st.cache_resource
 def init_db():
     return BlockchainMessengerDB()
-
 
 def login(db):
     st.subheader("🔑 Login to Your Account")
@@ -34,7 +32,6 @@ def login(db):
                     st.error("❌ Invalid username or password!")
             else:
                 st.warning("⚠️ Please enter both username and password")
-    # Demo credentials placed below the form
     with st.expander("🎮 Demo Credentials", expanded=False):
         st.markdown("""
         **Demo Account 1:**
@@ -46,17 +43,13 @@ def login(db):
         *Use these to test the blockchain messaging system!*
         """)
 
-
 def register(db):
     st.subheader("📝 Create New Account")
-    st.markdown(
-        "💡 **Tip:** You can also use the demo accounts `user1` and `user2` with password `pass123` and `pass456`")
+    st.markdown("💡 **Tip:** You can also use the demo accounts `user1` and `user2` with password `pass123` and `pass456`")
     with st.form("register_form", clear_on_submit=False):
         username = st.text_input("👤 Choose Username", placeholder="Enter a unique username", key="register_username")
-        password1 = st.text_input("🔒 Password", type="password", placeholder="Enter your password",
-                                  key="register_password1")
-        password2 = st.text_input("🔒 Confirm Password", type="password", placeholder="Re-enter your password",
-                                  key="register_password2")
+        password1 = st.text_input("🔒 Password", type="password", placeholder="Enter your password", key="register_password1")
+        password2 = st.text_input("🔒 Confirm Password", type="password", placeholder="Re-enter your password", key="register_password2")
         submitted = st.form_submit_button("📝 Register", use_container_width=True)
         if submitted:
             if not username or not password1 or not password2:
@@ -73,17 +66,10 @@ def register(db):
                 else:
                     st.error(f"❌ {msg}")
 
-
 def messaging(db):
     user = st.session_state["user"]
     st.sidebar.title("Navigation")
     st.sidebar.write(f"**👤 Logged in as:** {user['username']}")
-    # if user['username'] not in ['user1', 'user2']:
-    #     st.sidebar.info("💡 Try messaging `user1` or `user2`!")
-    # elif user['username'] == 'user1':
-    #     st.sidebar.info("💡 Send a message to `user2`!")
-    # else:
-    #     st.sidebar.info("💡 Send a message to `user1`!")
     if st.sidebar.button("🚪 Logout", use_container_width=True, key="logout_button"):
         for key in ["logged_in", "user", "page"]:
             if key in st.session_state:
@@ -91,17 +77,12 @@ def messaging(db):
         st.rerun()
     st.title(f"💬 Welcome, {user['username']}!")
     tab1, tab2, tab3 = st.tabs(["📤 Send Message", "📥 Inbox", "⛓️ Blockchain Stats"])
+    
     with tab1:
         st.subheader("📤 Send New Message")
-        # if user['username'] == 'user1':
-        #     st.info("💡 **Quick tip:** Send a message to `user2` to test the blockchain!")
-        # elif user['username'] == 'user2':
-        #     st.info("💡 **Quick tip:** Send a message to `user1` to test the blockchain!")
         with st.form("send_message_form", clear_on_submit=True):
-            receiver = st.text_input("📮 Send to (username)", placeholder="Enter recipient's username",
-                                     key="msg_receiver")
-            message = st.text_area("💬 Your Message", placeholder="Type your message here...", height=150,
-                                   key="msg_content")
+            receiver = st.text_input("📮 Send to (username)", placeholder="Enter recipient's username", key="msg_receiver")
+            message = st.text_area("💬 Your Message", placeholder="Type your message here...", height=150, key="msg_content")
             sent = st.form_submit_button("📨 Send Message", use_container_width=True)
             if sent:
                 if not receiver or not message:
@@ -120,6 +101,7 @@ def messaging(db):
                             st.rerun()
                         else:
                             st.error(f"❌ {msg}")
+    
     with tab2:
         st.subheader("📥 Your Messages")
         messages = db.get_all_messages_for_user(user["id"])
@@ -131,14 +113,10 @@ def messaging(db):
                 receiver_name = receiver_user.data[0]["username"] if receiver_user.data else "Unknown"
                 if m["sender_id"] == user["id"]:
                     direction = f"📤 **You** → {receiver_name}"
-                    st.markdown(
-                        f'<div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #0ea5e9;">',
-                        unsafe_allow_html=True)
+                    st.markdown(f'<div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #0ea5e9;">', unsafe_allow_html=True)
                 else:
                     direction = f"📥 **{sender_name}** → You"
-                    st.markdown(
-                        f'<div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #22c55e;">',
-                        unsafe_allow_html=True)
+                    st.markdown(f'<div style="background-color: #f0fdf4; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 3px solid #22c55e;">', unsafe_allow_html=True)
                 st.markdown(f"**{direction}**")
                 st.write(f"💬 {m['message_text']}")
                 st.caption(f"🕒 {m['sent_at'][:19]} | 🔗 Hash: {m['blockchain_hash'][:16]}...")
@@ -146,6 +124,7 @@ def messaging(db):
                 st.markdown("---")
         else:
             st.markdown("📭 No messages found. Start a conversation!")
+    
     with tab3:
         st.subheader("⛓️ Blockchain Statistics")
         db.load_existing_chain()
@@ -158,11 +137,10 @@ def messaging(db):
         with col3:
             total_users = db.get_all_users_count()
             st.metric("👥 Total Users", total_users)
-        # FIXED: Buttons with icons INSIDE the button labels, side by side
+        
         col4, col5 = st.columns([1, 1])
         with col4:
-            verify_clicked = st.button("🔍 Verify Blockchain Integrity", key="verify_blockchain_btn",
-                                       use_container_width=True)
+            verify_clicked = st.button("🔍 Verify Blockchain Integrity", key="verify_blockchain_btn", use_container_width=True)
             if verify_clicked:
                 with st.spinner("Verifying blockchain..."):
                     db.load_existing_chain()
@@ -171,16 +149,7 @@ def messaging(db):
                         st.success(f"✅ {message}")
                     else:
                         st.error(f"❌ {message}")
-        # with col5:
-        #     debug_clicked = st.button("🛠️ Debug Blockchain", key="debug_blockchain_btn", use_container_width=True)
-        #     if debug_clicked:
-        #         st.write("**Debug Information:**")
-        #         db.debug_blockchain()
-        #         res = db.supabase.table("messages").select("*").order("id").execute()
-        #         if res.data:
-        #             st.write("**Database Messages:**")
-        #             for idx, msg in enumerate(res.data):
-        #                 st.json(msg)
+        
         if len(db.chain) > 0:
             st.subheader("🔗 Recent Blockchain Blocks")
             recent_blocks = db.chain[-3:] if len(db.chain) > 3 else db.chain
@@ -194,17 +163,13 @@ def messaging(db):
                         "Previous Hash": block['previous_hash']
                     })
 
-
 def main():
     st.markdown("""
     <style>
-    /* Simple, clean styling */
     body {
         font-family: "Segoe UI", sans-serif;
         background-color: #fafbfc;
     }
-
-    /* Basic button styling */
     .stButton > button {
         background-color: #1f2937 !important;
         color: white !important;
@@ -214,26 +179,20 @@ def main():
         font-weight: 500 !important;
         transition: background-color 0.2s ease;
     }
-
     .stButton > button:hover {
         background-color: #374151 !important;
     }
-
-    /* Clean input fields */
     .stTextInput > div > div > input,
     .stTextArea > div > div > textarea {
         border: 1px solid #d1d5db !important;
         border-radius: 6px !important;
         padding: 0.75rem !important;
     }
-
     .stTextInput > div > div > input:focus,
     .stTextArea > div > div > textarea:focus {
         border-color: #1f2937 !important;
         outline: none !important;
     }
-
-    /* Simple metrics */
     [data-testid="metric-container"] {
         background: white !important;
         border: 1px solid #e5e7eb !important;
@@ -241,14 +200,12 @@ def main():
         padding: 1rem !important;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
     }
-
-    /* Column spacing */
     div[data-testid="stHorizontalBlock"] > div {
         gap: 1rem !important;
     }
     </style>
     """, unsafe_allow_html=True)
-
+    
     db = init_db()
     if "logged_in" not in st.session_state:
         st.session_state["logged_in"] = False
@@ -258,22 +215,13 @@ def main():
         st.title("🔐 Secure Blockchain Messaging")
         st.markdown("### Send encrypted messages with blockchain verification")
         st.markdown("---")
-        # FIXED: Better column ratios to prevent overlap
         col1, col2, col3 = st.columns([1.2, 1.2, 5.6])
         with col1:
-            if st.button(
-                    "Login",
-                    type="primary" if st.session_state["page"] == "login" else "secondary",
-                    key="main_login_btn"
-            ):
+            if st.button("Login", type="primary" if st.session_state["page"] == "login" else "secondary", key="main_login_btn"):
                 st.session_state["page"] = "login"
                 st.rerun()
         with col2:
-            if st.button(
-                    "Register",
-                    type="primary" if st.session_state["page"] == "register" else "secondary",
-                    key="main_register_btn"
-            ):
+            if st.button("Register", type="primary" if st.session_state["page"] == "register" else "secondary", key="main_register_btn"):
                 st.session_state["page"] = "register"
                 st.rerun()
         st.markdown("---")
@@ -284,7 +232,5 @@ def main():
     else:
         messaging(db)
 
-
 if __name__ == "__main__":
     main()
-
