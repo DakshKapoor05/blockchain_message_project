@@ -34,18 +34,19 @@ def login(db):
                     st.error("❌ Invalid username or password!")
             else:
                 st.warning("⚠️ Please enter both username and password")
-    # Demo credentials placed below the form
-    with st.expander("🎮 Demo Credentials", expanded=False):
+    # Demo credentials placed below the form     
+     with st.expander("🎮 Demo Credentials", expanded=False):
         st.markdown("""
         **Demo Account 1:**
         - Username: `user1`  
         - Password: `pass123`
+        
         **Demo Account 2:**
         - Username: `user2`
         - Password: `pass456`
+        
         *Use these to test the blockchain messaging system!*
         """)
-
 
 def register(db):
     st.subheader("📝 Create New Account")
@@ -287,4 +288,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
